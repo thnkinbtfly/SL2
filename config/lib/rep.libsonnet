@@ -4,6 +4,7 @@ local languages = import "lang.libsonnet";
 local trained_path = std.extVar("MTL_BERT_OUTPUTS");
 local data_root = std.extVar("MTL_DATA"); 
 local mbert_path = data_root + "/mbert";
+local pretrained_path = std.extVar("PRETRAIN_PATH");
 
 // this is just for reference; we actually store the best models
 // as epoch_best
@@ -99,11 +100,11 @@ local best_berts = {
         //     else params[1];
         local dim = 768;
         local is_bert = (model_name != "roberta");
-        local model_path = if model_name == "mbert" then mbert_path
-            else if model_name == "vambert" then trained_path + "/" + language + "/tva_base/epoch_" + epoch
-            else if model_name == "ssmba_vambert" then trained_path + "/" + language + "/tva_base_ssmba_tva_base/epoch_" + epoch
-            else if model_name == "lapt" then trained_path + "/" + language + "/lapt_base/epoch_" + epoch
-            else trained_path + "/" + language + "/roberta/epoch_" + epoch;
+        local model_path = pretrained_path;
+//            else if model_name == "vambert" then pretrained_path
+//            else if model_name == "ssmba_vambert" then trained_path + "/" + language + "/tva_base_ssmba_tva_base/epoch_" + epoch
+//            else if model_name == "lapt" then trained_path + "/" + language + "/" + pretrained_path + "/epoch_" + epoch
+//            else trained_path + "/" + language + "/roberta/epoch_" + epoch;
         local max_length = 512;
         {
             "indexers": {

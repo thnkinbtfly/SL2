@@ -1,5 +1,8 @@
 local data_root = std.extVar("MTL_DATA"); 
 local archive_root = std.extVar("MTL_ALLENNLP_OUTPUTS");
+local split_seed = std.extVar("SEED_SET");
+local ext_train_size = std.parseInt(std.extVar("TRAIN_SIZE"));
+
 // local data_root = "/m-pinotHD/echau18/lr-ssmba/data";
 // local archive_root = "/m-pinotHD/echau18/lr-ssmba/allennlp_outputs";
 {
@@ -183,6 +186,138 @@ local archive_root = std.extVar("MTL_ALLENNLP_OUTPUTS");
         },
         "ud": null,
     },
+    "mhrwiktralatin": {
+        "ner": {
+            "train_size": 100,
+            "train_data_path": data_root + "/mhrwiktralatin/panx/train",
+            "validation_data_path": data_root + "/mhrwiktralatin/panx/dev",
+        },
+        "ud": null,
+    },
+    "si": {
+        "ner": {
+            "train_size": 100,
+            "train_data_path": data_root + "/si/panx/train",
+            "validation_data_path": data_root + "/si/panx/dev",
+        },
+        "ud": null,
+    },
+    "silatin": {
+        "ner": {
+            "train_size": 100,
+            "train_data_path": data_root + "/silatin/panx/train",
+            "validation_data_path": data_root + "/silatin/panx/dev",
+        },
+        "ud": null,
+    },
+    "xmf": {
+        "ner": {
+            "train_size": 100,
+            "train_data_path": data_root + "/xmf/panx/train",
+            "validation_data_path": data_root + "/xmf/panx/dev",
+        },
+        "ud": null,
+    },
+    "xmflatin": {
+        "ner": {
+            "train_size": 100,
+            "train_data_path": data_root + "/xmflatin/panx/train",
+            "validation_data_path": data_root + "/xmflatin/panx/dev",
+        },
+        "ud": null,
+    },
+    "km": {
+        "ner": {
+            "train_size": 100,
+            "train_data_path": data_root + "/km/panx/train",
+            "validation_data_path": data_root + "/km/panx/dev",
+        },
+        "ud": null,
+    },
+    "kmlatin": {
+        "ner": {
+            "train_size": 100,
+            "train_data_path": data_root + "/kmlatin/panx/train",
+            "validation_data_path": data_root + "/kmlatin/panx/dev",
+        },
+        "ud": null,
+    },
+    "ckb": {
+        "ner": {
+            "train_size": 1000,
+            "train_data_path": data_root + "/ckb/panx/train",
+            "validation_data_path": data_root + "/ckb/panx/dev",
+        },
+        "ud": null,
+    },
+    "ckblatinnfc": {
+        "ner": {
+            "train_size": 1000,
+            "train_data_path": data_root + "/ckblatinnfkc/panx/train",
+            "validation_data_path": data_root + "/ckblatinnfkc/panx/dev",
+        },
+        "ud": null,
+    },
+    "ckblatinnfkc": {
+        "ner": {
+            "train_size": 1000,
+            "train_data_path": data_root + "/ckblatinnfkc/panx/train",
+            "validation_data_path": data_root + "/ckblatinnfkc/panx/dev",
+        },
+        "ud": null,
+    },
+    "cu": {
+        "ner": null,
+        "ud": {
+            "train_size": 4124,
+            "train_data_path": data_root + "/cu/ud/train.conllu",
+            "validation_data_path": data_root + "/cu/ud/dev.conllu",
+        },
+    },
+    "culatin": {
+        "ner": null,
+        "ud": {
+            "train_size": 4124,
+            "train_data_path": data_root + "/culatin/ud/train.conllu",
+            "validation_data_path": data_root + "/culatin/ud/dev.conllu",
+        },
+    },
+    "myv": {
+        "ner": null,
+        "ud": {
+            "train_size": ext_train_size,
+            "train_data_path": data_root + "/myv/ud" + split_seed + "/train.conllu",
+            "validation_data_path": data_root + "/myv/ud" + split_seed + "/dev.conllu",
+        },
+    },
+    "myvrulatin": {
+        "ner": null,
+        "ud": {
+            "train_size": ext_train_size,
+            "train_data_path": data_root + "/myv/ud" + split_seed + "/train.conllu",
+            "validation_data_path": data_root + "/myv/ud" + split_seed + "/dev.conllu",
+        },
+    },
+    "myvlatin": {
+        "ner": null,
+        "ud": {
+            "train_size": ext_train_size,
+            "train_data_path": data_root + "/myv/ud" + split_seed + "/train.conllu",
+            "validation_data_path": data_root + "/myv/ud" + split_seed + "/dev.conllu",
+        },
+    },
+    "mtarabbw": {
+        "ner": {
+            "train_size": 100,
+            "train_data_path": data_root + "/mt/panx/train",
+            "validation_data_path": data_root + "/mt/panx/dev",
+        },
+        "ud": {
+            "train_size": 1123,
+            "train_data_path": data_root + "/mt/ud/train.conllu",
+            "validation_data_path": data_root + "/mt/ud/dev.conllu",
+        },
+    },
     "mt": {
         "ner": {
             "train_size": 100,
@@ -289,6 +424,18 @@ local archive_root = std.extVar("MTL_ALLENNLP_OUTPUTS");
             "train_size": 1656,
             "train_data_path": data_root + "/uglatin/ud/train.conllu",
             "validation_data_path": data_root + "/uglatin/ud/dev.conllu",
+        },
+    },
+    "uglatinnfc": {
+        "ner": {
+            "train_size": 100,
+            "train_data_path": data_root + "/uglatinnfc/panx/train",
+            "validation_data_path": data_root + "/uglatinnfc/panx/dev",
+        },
+        "ud": {
+            "train_size": 1656,
+            "train_data_path": data_root + "/uglatinnfc/ud/train.conllu",
+            "validation_data_path": data_root + "/uglatinnfc/ud/dev.conllu",
         },
     },
     "uglatinnfkc": {

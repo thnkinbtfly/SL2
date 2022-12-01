@@ -1,5 +1,5 @@
 from conllu.parser import parse_line, DEFAULT_FIELDS
-from allennlp.common.file_utils import cached_path
+# from allennlp.common.file_utils import cached_path
 import argparse
 from tqdm import tqdm
 
@@ -16,7 +16,7 @@ def lazy_parse(text, fields=DEFAULT_FIELDS):
 
 def extract(file_path, output_file_path):
     # if `file_path` is a URL, redirect to the cache
-    file_path = cached_path(file_path)
+    # file_path = cached_path(file_path)
 
     with open(file_path, "r") as conllu_file, open(
         output_file_path, "w"

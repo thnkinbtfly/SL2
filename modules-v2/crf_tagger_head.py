@@ -249,8 +249,25 @@ class CrfTagger(Head):
                 metric(class_probabilities, tags, mask)
             if self.calculate_span_f1:
                 self._f1_metric(class_probabilities, tags, mask)
+            import os
+            if os.environ.get("WRITE_FILE_PREFIX", None):
+                f_prefix = os.environ.get("WRITE_FILE_PREFIX")
+                gold_labels = tags.view(-1).long()
+                with open(f"{f_prefix}_golden1", 'a', encoding='utf-8') as f:
+                    with open(f"{f_prefix}_golden_label", 'a', encoding='utf-8') as f2:
+                        for _something in gold_labels.clone().cpu().squeeze():
+                            f.write(f"{int(_something)}\n")
+                            f2.write(f"{self.vocab._index_to_token['labels'][int(_something)]}\n")
         if metadata is not None:
             output["words"] = [x["words"] for x in metadata]
+            import os
+            if os.environ.get("WRITE_FILE_PREFIX", None):
+                f_prefix = os.environ.get("WRITE_FILE_PREFIX")
+                with open(f"{f_prefix}_words", 'a', encoding='utf-8') as f:
+                    for x in metadata:
+                        for _something in x["words"]:
+                            f.write(f"{_something}\n")
+
         return output
 
     @overrides

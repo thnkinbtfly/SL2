@@ -1,5 +1,6 @@
 import argparse
 import os
+import glob
 
 from tokenizers import BertWordPieceTokenizer
 
@@ -25,8 +26,11 @@ tokenizer = BertWordPieceTokenizer(
     lowercase=False,
 )
 
+corpora = list(glob.glob(args.corpus))
+print(corpora)
 tokenizer.train(
-    args.corpus,
+    corpora,
+    # args.corpus,
     vocab_size=args.vocab_size,
     min_frequency=args.min_frequency,
     limit_alphabet=args.limit_alphabet,

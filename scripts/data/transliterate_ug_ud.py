@@ -22,7 +22,7 @@ def transliterate(token):
         capture_output=True,
         input=token,
         text=True,
-        cwd="../../muller-transcription/transfer/transliteration/",
+        cwd="../mbert-unseen-languages/transfer/transliteration/",
     )
     transliterated = translit_output.stdout
     return transliterated.strip()

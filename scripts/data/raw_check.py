@@ -7,8 +7,9 @@ from tqdm import tqdm
 parser = argparse.ArgumentParser()
 parser.add_argument("--target-dir", type=str)
 parser.add_argument("--output-dir", type=str)
-parser.add_argument("--filter-file", type=str, action="append", default=[])
+# parser.add_argument("--filter-file", type=str, action="append", default=[])
 parser.add_argument("--filter-base-dir", type=str, default="./")
+parser.add_argument("--filter-file", type=str, nargs="+")
 parser.add_argument("--verbose", action="store_true")
 args = parser.parse_args()
 

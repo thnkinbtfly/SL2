@@ -4,6 +4,7 @@
 3. Pad to args.count with the most common wordpieces in the new vocab
 """
 import argparse
+import os
 from collections import Counter, OrderedDict
 
 from tokenizers import BertWordPieceTokenizer
@@ -37,7 +38,7 @@ parser.add_argument(
 parser.add_argument(
     "--use-common-wordpieces",
     action="store_true",
-    help="Whether to use the most common wordpieces overall instead of the common ones for UNK",
+    help="NOT working right now..",
 )
 
 args = parser.parse_args()
@@ -126,6 +127,7 @@ while len(selection) < args.count and i < len(new_counter):
     i += 1
 
 
+os.makedirs(os.path.dirname(args.output_file), exist_ok=True)
 with open(args.output_file, "w") as ouf:
     for item in selection:
         ouf.write(item)

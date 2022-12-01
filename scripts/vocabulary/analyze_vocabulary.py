@@ -5,10 +5,11 @@ from tokenizers import BertWordPieceTokenizer, ByteLevelBPETokenizer
 from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--lang", type=str)
+parser.add_argument("--lang", type=str, default='ug')
+parser.add_argument("--vocab_path", type=str, default="specializing-multilingual-data/data/ug/unlabeled/bert_shards_new_onlytrain/20000-5-1000-merged.txt")
 args = parser.parse_args()
 
-BASE_DIR = "/m-pinotHD/echau18/lr-ssmba/data"
+BASE_DIR = "specializing-multilingual-data/data"
 
 DATA_PATHS = {
     "unlabeled": {
@@ -16,6 +17,12 @@ DATA_PATHS = {
         "valid": "unlabeled/bert_cleaned/valid.txt",
         "test": "unlabeled/bert_cleaned/test.txt",
     },
+    # "normalized": {
+    #     "test_NFC": "unlabeled/bert_cleaned/normalize/test_NFC.txt",
+    #     "test_NFD": "unlabeled/bert_cleaned/normalize/test_NFD.txt",
+    #     "test_NFKC": "unlabeled/bert_cleaned/normalize/test_NFKC.txt",
+    #     "test_NFKD": "unlabeled/bert_cleaned/normalize/test_NFKD.txt",
+    # },
     "ud": {
         "train": "ud/train.raw",
         "valid": "ud/dev.raw",
@@ -43,7 +50,7 @@ def load_roberta_tokenizer(lang):
 def load_mbert_tokenizer():
     mbert_vocab = os.path.join(BASE_DIR, "mbert/vocab.txt")
     tokenizer = BertWordPieceTokenizer(
-        mbert_vocab,
+        args.vocab_path,
         clean_text=True,
         handle_chinese_chars=True,
         strip_accents=False,
@@ -53,9 +60,8 @@ def load_mbert_tokenizer():
 
 
 def load_tva_tokenizer(lang):
-    tva_vocab = os.path.join(BASE_DIR, lang, "unlabeled/bert_shards/vocab.txt")
     tokenizer = BertWordPieceTokenizer(
-        tva_vocab,
+        args.vocab_path,
         clean_text=True,
         handle_chinese_chars=True,
         strip_accents=False,
@@ -83,21 +89,21 @@ def roberta_continuation_indicator(index, subword):
 
 
 tokenizers = {
-    "mbert": (
-        load_mbert_tokenizer(),
-        wordpiece_continuation_indicator,
-        "[UNK]",
-    ),
+    # "mbert": (
+    #     load_mbert_tokenizer(),
+    #     wordpiece_continuation_indicator,
+    #     "[UNK]",
+    # ),
     "tva": (
         load_tva_tokenizer(args.lang),
         wordpiece_continuation_indicator,
         "[UNK]",
     ),
-    "roberta": (
-        load_roberta_tokenizer(args.lang),
-        roberta_continuation_indicator,
-        "<unk>",
-    ),
+    # "roberta": (
+    #     load_roberta_tokenizer(args.lang),
+    #     roberta_continuation_indicator,
+    #     "<unk>",
+    # ),
 }
 
 
@@ -115,9 +121,11 @@ def get_metrics(tokenizer, file_path, *, continuation_indicator, unk_token):
     global_token_count = 0
     global_subword_count = 0
     global_continuation_subword_count = 0
+    global_has_continuation_subword_count = 0
     global_unk_subword_count = 0
     global_token_level_subword_count = 0
     global_token_level_continuation_subword_count = 0
+    global_tokens_with_conti_count = 0
     global_token_level_unk_subword_count = 0
     global_tokens_with_unk_count = 0
     with open(file_path) as f:
@@ -146,24 +154,27 @@ def get_metrics(tokenizer, file_path, *, continuation_indicator, unk_token):
                 ).tokens
                 token_level_subword_count += len(tok_subwords)
                 token_has_unk = False
+                token_has_conti = False
                 for i, subword in enumerate(tok_subwords):
                     if continuation_indicator(i, subword):
                         global_token_level_continuation_subword_count += 1
+                        token_has_conti = True
                     if subword == unk_token:
                         global_token_level_unk_subword_count += 1
                         token_has_unk = True
                 global_tokens_with_unk_count += int(token_has_unk)
+                global_tokens_with_conti_count += int(token_has_conti)
             global_token_level_subword_count += token_level_subword_count
 
-            ##### BEGIN SANITY CHECK #####
-            if (
-                token_level_subword_count != subword_count
-                and unk_token == "[UNK]"
-            ):
-                import pdb
-
-                pdb.set_trace()
-            ##### END SANITY CHECK   #####
+            # ##### BEGIN SANITY CHECK #####
+            # if (
+            #     token_level_subword_count != subword_count
+            #     and unk_token == "[UNK]"
+            # ):
+            #     import pdb
+            #
+            #     pdb.set_trace()
+            # ##### END SANITY CHECK   #####
     return {
         "token_count": global_token_count,
         "subword_count": global_subword_count,
@@ -185,6 +196,9 @@ def get_metrics(tokenizer, file_path, *, continuation_indicator, unk_token):
         "tokens_with_unk_count": global_tokens_with_unk_count,
         "tokens_with_unk_fraction": global_tokens_with_unk_count
         / global_token_count,
+        "tokens_with_conti_count": global_tokens_with_conti_count,
+        "tokens_with_conti_fraction": global_tokens_with_conti_count
+                                    / global_token_count,
     }
 
 
@@ -200,7 +214,7 @@ for data_name, data_paths in DATA_PATHS.items():
             continue
         print(f"\t\tFor data split {{{split}}} at path {file_path}")
         print(
-            f"\t\t\tTokenizer\tFertility\tContinuation\tUnkProportion\tTFertility\tTContinuation\tTUnkProp\tTokWithUnkProp"
+            f"\t\t\tTokenizer\tFertility\tContinuation\tUnkProportion\tTFertility\tTContinuation\tTUnkProp\tTokWithUnkProp\tTokWithContiProp"
         )
 
         for tokenizer_name, tokenizer_args in tokenizers.items():
@@ -212,13 +226,14 @@ for data_name, data_paths in DATA_PATHS.items():
                 unk_token=unk,
             )
             print(
-                f"\t\t\t{tokenizer_name}"
-                f"\t\t{metrics['fertility']:.5f}"
-                f"\t\t{metrics['continuation_proportion']:.5f}"
-                f"\t\t{metrics['unk_proportion']:.5f}"
-                f"\t\t{metrics['token_level_fertility']:.5f}"
-                f"\t\t{metrics['token_level_continuation_proportion']:.5f}"
-                f"\t\t{metrics['token_level_unk_proportion']:.5f}"
-                f"\t\t{metrics['tokens_with_unk_fraction']:.5f}"
+                f"\t\t\t\t{tokenizer_name}"
+                f"\t\t\t{metrics['fertility']:.5f}"
+                f"\t\t\t{metrics['continuation_proportion']:.5f}"
+                f"\t\t\t{metrics['unk_proportion']:.5f}"
+                f"\t\t\t{metrics['token_level_fertility']:.5f}"
+                f"\t\t\t{metrics['token_level_continuation_proportion']:.5f}"
+                f"\t\t\t{metrics['token_level_unk_proportion']:.5f}"
+                f"\t\t\t{metrics['tokens_with_unk_fraction']:.5f}"
+                f"\t\t\t{metrics['tokens_with_conti_fraction']:.5f}"
             )
 print(f"END VOCABULARY REPORT FOR {args.lang}")
