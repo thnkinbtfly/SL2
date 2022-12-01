@@ -1,4 +1,4 @@
-# Script, Language, and Labels: Overcoming Three Discrepancies for Low-Resource Language Specialization
+# Script, Language, and Labels: Overcoming Three Discrepancies for Low-Resource Language Specialization [AAAI2023]
 
 This work is implemented based on [specializing-multilingual](https://github.com/ethch18/specializing-multilingual), [bert](https://github.com/google-research/bert), [allennlp](https://github.com/ethch18/allennlp/tree/bd4457431e818cc3650e195a2b65345ee3f7c7e9)
 
